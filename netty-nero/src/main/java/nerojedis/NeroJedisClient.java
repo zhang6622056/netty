@@ -1,5 +1,15 @@
 package nerojedis;
 
+
+
+/***
+ *
+ * redis 客户端对象
+ * @author Nero
+ * @date 2019-11-19
+ * *@param: null
+ * @return 
+ */
 public class NeroJedisClient {
 
     private NeroJedisSocket neroJedisSocket;

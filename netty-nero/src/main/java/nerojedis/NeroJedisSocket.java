@@ -7,6 +7,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+
+
+/***
+ *
+ * redis 客户端实际交互socket对象
+ * @author Nero
+ * @date 2019-11-19
+ * *@param: null
+ * @return 
+ */
 public class NeroJedisSocket {
 
     private Socket socket;
