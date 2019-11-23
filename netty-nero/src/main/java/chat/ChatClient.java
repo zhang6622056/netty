@@ -30,7 +30,7 @@ public class ChatClient {
 
     //- 连接
     public void doConn() throws IOException {
-        InetSocketAddress inetSocketAddress=new InetSocketAddress("127.0.0.1",9090);
+        InetSocketAddress inetSocketAddress=new InetSocketAddress("127.0.0.1",8888);
 
         //- 监听channel的read事件
         if (socketChannel.connect(inetSocketAddress)){  //- 连接上了。
