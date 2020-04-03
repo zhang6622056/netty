@@ -83,6 +83,19 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
         this(nThreads, executor, selectorProvider, DefaultSelectStrategyFactory.INSTANCE);
     }
 
+
+
+    /***
+     *
+     * 功能描述 
+     * @author Nero
+     * @date 2020-04-03
+     * @param: nThreads 要创建的NioEventLoop数
+     * @param: executor ThreadPerTaskExecutor 底层搭配FastThread提交任务
+     * @param: selectorProvider  Java原生，与Nio有关
+     * @param: selectStrategyFactory  
+     * @return 
+     */
     public NioEventLoopGroup(int nThreads, Executor executor, final SelectorProvider selectorProvider,
                              final SelectStrategyFactory selectStrategyFactory) {
         super(nThreads, executor, selectorProvider, selectStrategyFactory, RejectedExecutionHandlers.reject());
@@ -95,6 +108,22 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
                 RejectedExecutionHandlers.reject());
     }
 
+
+
+
+    /***
+     *
+     * 功能描述
+     * @author Nero
+     * @date 2020-04-03
+     * @param: nThreads   该group的线程数
+     * @param: executor
+     * @param: chooserFactory
+     * @param: selectorProvider
+     * @param: selectStrategyFactory  选择策略工厂  TODO-ZL
+     * @param: rejectedExecutionHandler   线程池的拒绝策略，默认抛出异常
+     * @return 
+     */
     public NioEventLoopGroup(int nThreads, Executor executor, EventExecutorChooserFactory chooserFactory,
                              final SelectorProvider selectorProvider,
                              final SelectStrategyFactory selectStrategyFactory,
@@ -131,9 +160,25 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
         }
     }
 
+
+
+
+
+    /***
+     *
+     * 创建一个EventLoop对象，NioEventLoop也是用这种方式创建的
+     * @author Nero
+     * @date 2020-04-03
+     * *@param: executor
+    *@param: args
+     * @return io.netty.channel.EventLoop
+     */
     @Override
     protected EventLoop newChild(Executor executor, Object... args) throws Exception {
+        //- 如果可变参数是4个，那么最后一个参数必将是EventLoopTaskQueueFactory
         EventLoopTaskQueueFactory queueFactory = args.length == 4 ? (EventLoopTaskQueueFactory) args[3] : null;
+
+        //- 创建NioEventLoop对象
         return new NioEventLoop(this, executor, (SelectorProvider) args[0],
             ((SelectStrategyFactory) args[1]).newSelectStrategy(), (RejectedExecutionHandler) args[2], queueFactory);
     }

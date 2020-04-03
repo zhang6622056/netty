@@ -22,8 +22,14 @@ import java.util.Locale;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * A {@link ThreadFactory} implementation with a simple naming rule.
+
+/***
+ *
+ * 负责按照指定的规则创建线程，线程对象为：FastThreadLocalThread
+ * @author Nero
+ * @date 2020-04-03
+ * *@param: null
+ * @return
  */
 public class DefaultThreadFactory implements ThreadFactory {
 
@@ -103,6 +109,9 @@ public class DefaultThreadFactory implements ThreadFactory {
                 Thread.currentThread().getThreadGroup() : System.getSecurityManager().getThreadGroup());
     }
 
+
+
+    //- 按照规则定向创建线程
     @Override
     public Thread newThread(Runnable r) {
         Thread t = newThread(FastThreadLocalRunnable.wrap(r), prefix + nextId.incrementAndGet());
@@ -120,6 +129,9 @@ public class DefaultThreadFactory implements ThreadFactory {
         return t;
     }
 
+
+
+    //- 创建一个FastThreadLocalThread线程
     protected Thread newThread(Runnable r, String name) {
         return new FastThreadLocalThread(threadGroup, r, name);
     }

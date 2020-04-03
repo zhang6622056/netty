@@ -45,9 +45,15 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ServerBootstrap.class);
 
+
+
+    //- 配置项
     private final Map<ChannelOption<?>, Object> childOptions = new LinkedHashMap<ChannelOption<?>, Object>();
     private final Map<AttributeKey<?>, Object> childAttrs = new LinkedHashMap<AttributeKey<?>, Object>();
     private final ServerBootstrapConfig config = new ServerBootstrapConfig(this);
+
+
+    //- 事件筛选器组
     private volatile EventLoopGroup childGroup;
     private volatile ChannelHandler childHandler;
 
@@ -73,10 +79,17 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         return group(group, group);
     }
 
-    /**
-     * Set the {@link EventLoopGroup} for the parent (acceptor) and the child (client). These
-     * {@link EventLoopGroup}'s are used to handle all the events and IO for {@link ServerChannel} and
-     * {@link Channel}'s.
+
+
+
+    /***
+     *
+     * 功能描述 
+     * @author Nero
+     * @date 2020-04-03
+     * @param: parentGroup  bossGroup
+     * @param: childGroup  workerGroup
+     * @return io.netty.bootstrap.ServerBootstrap
      */
     public ServerBootstrap group(EventLoopGroup parentGroup, EventLoopGroup childGroup) {
         super.group(parentGroup);
@@ -124,6 +137,9 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
     /**
      * Set the {@link ChannelHandler} which is used to serve the request for the {@link Channel}'s.
      */
+
+
+    //- childHandler 保存都是服务端的，都在ServerBootstrap.
     public ServerBootstrap childHandler(ChannelHandler childHandler) {
         this.childHandler = ObjectUtil.checkNotNull(childHandler, "childHandler");
         return this;

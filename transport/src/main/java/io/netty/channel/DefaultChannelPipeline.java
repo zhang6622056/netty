@@ -89,6 +89,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
      */
     private boolean registered;
 
+
+
+    //- 双向链表，头尾为虚节点
     protected DefaultChannelPipeline(Channel channel) {
         this.channel = ObjectUtil.checkNotNull(channel, "channel");
         succeededFuture = new SucceededChannelFuture(channel, null);
@@ -100,6 +103,10 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         head.next = tail;
         tail.prev = head;
     }
+
+
+
+
 
     final MessageSizeEstimator.Handle estimatorHandle() {
         MessageSizeEstimator.Handle handle = estimatorHandle;

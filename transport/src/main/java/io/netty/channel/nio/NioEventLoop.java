@@ -114,8 +114,11 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     private Selector selector;
     private Selector unwrappedSelector;
     private SelectedSelectionKeySet selectedKeys;
-
     private final SelectorProvider provider;
+
+
+
+
 
     /**
      * Boolean that controls determines if a blocked Selector.select should
@@ -126,29 +129,62 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     private final AtomicBoolean wakenUp = new AtomicBoolean();
 
     private final SelectStrategy selectStrategy;
-
     private volatile int ioRatio = 50;
     private int cancelledKeys;
     private boolean needsToSelectAgain;
 
+
+
+
+    /****
+     *
+     * 功能描述 
+     * @author Nero
+     * @date 2020-04-03
+     * @param: parent 所属的NioEventLoopGroup
+     * @param: executor ThreadPerTaskExecutor. 提交任务，创建FastThread
+     * @param: selectorProvider 创建服务端的socket，创建Selector
+     * @param: strategy   选择策略
+     * @param: rejectedExecutionHandler   拒绝策略
+     * @param: queueFactory   任务队列
+     * @return 
+     */
     NioEventLoop(NioEventLoopGroup parent, Executor executor, SelectorProvider selectorProvider,
                  SelectStrategy strategy, RejectedExecutionHandler rejectedExecutionHandler,
                  EventLoopTaskQueueFactory queueFactory) {
+
+
+
+        //- 保存了executor，创建了两个任务队列
         super(parent, executor, false, newTaskQueue(queueFactory), newTaskQueue(queueFactory),
                 rejectedExecutionHandler);
+
+
+
         if (selectorProvider == null) {
             throw new NullPointerException("selectorProvider");
         }
         if (strategy == null) {
             throw new NullPointerException("selectStrategy");
         }
+
         provider = selectorProvider;
+
+        //- 创建Selector
         final SelectorTuple selectorTuple = openSelector();
+
         selector = selectorTuple.selector;
+
+        //-
         unwrappedSelector = selectorTuple.unwrappedSelector;
+        //- 变更过数据结构的
         selectStrategy = strategy;
     }
 
+
+
+
+    //- 创建任务队列
     private static Queue<Runnable> newTaskQueue(
             EventLoopTaskQueueFactory queueFactory) {
         if (queueFactory == null) {
@@ -157,8 +193,24 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         return queueFactory.newTaskQueue(DEFAULT_MAX_PENDING_TASKS);
     }
 
+
+
+
+
+
+
+    /**
+     *
+     * 缓存了两个selector
+     * @author Nero
+     * @date 2020-04-03
+     * *@param: null
+     * @return 
+     */
     private static final class SelectorTuple {
+        //- 未包装的
         final Selector unwrappedSelector;
+        //- 替换过数据类型的
         final Selector selector;
 
         SelectorTuple(Selector unwrappedSelector) {
@@ -171,6 +223,11 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             this.selector = selector;
         }
     }
+
+
+
+
+
 
     private SelectorTuple openSelector() {
         final Selector unwrappedSelector;
@@ -215,6 +272,8 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             @Override
             public Object run() {
                 try {
+
+
                     Field selectedKeysField = selectorImplClass.getDeclaredField("selectedKeys");
                     Field publicSelectedKeysField = selectorImplClass.getDeclaredField("publicSelectedKeys");
 
@@ -244,6 +303,9 @@ public final class NioEventLoop extends SingleThreadEventLoop {
                         return cause;
                     }
 
+
+                    //- 性能好处！
+                    //- 替换SelectorImpl的SelectedSelectionKeySet，重写Set。
                     selectedKeysField.set(unwrappedSelector, selectedKeySet);
                     publicSelectedKeysField.set(unwrappedSelector, selectedKeySet);
                     return null;
@@ -255,6 +317,9 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             }
         });
 
+
+
+
         if (maybeException instanceof Exception) {
             selectedKeys = null;
             Exception e = (Exception) maybeException;
@@ -263,6 +328,11 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         }
         selectedKeys = selectedKeySet;
         logger.trace("instrumented a special java.util.Set into: {}", unwrappedSelector);
+
+
+
+        //- unwrappedSelector原声的selector
+        //- SelectorTuple 缓存了两个selector
         return new SelectorTuple(unwrappedSelector,
                                  new SelectedSelectionKeySetSelector(unwrappedSelector, selectedKeySet));
     }
@@ -438,6 +508,17 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         }
     }
 
+
+
+
+    /***
+     *
+     * 线程启动，在单独的线程池中，死循环
+     * @author Nero
+     * @date 2020-04-03
+     * *@param:
+     * @return void
+     */
     @Override
     protected void run() {
         for (;;) {

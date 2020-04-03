@@ -18,6 +18,19 @@ package io.netty.util.concurrent;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
+
+
+
+/**
+ *
+ * Netty自定义线程池,
+ * execute method每一次都new一个线程，比较怀疑
+ *
+ * @author Nero
+ * @date 2020-04-03
+ * *@param: null
+ * @return 
+ */
 public final class ThreadPerTaskExecutor implements Executor {
     private final ThreadFactory threadFactory;
 

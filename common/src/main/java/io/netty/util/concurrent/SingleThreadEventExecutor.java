@@ -85,6 +85,9 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
     private volatile Thread thread;
     @SuppressWarnings("unused")
     private volatile ThreadProperties threadProperties;
+
+
+    //- NioEventLoop执行任务的执行器
     private final Executor executor;
     private volatile boolean interrupted;
 
@@ -167,6 +170,22 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         rejectedExecutionHandler = ObjectUtil.checkNotNull(rejectedHandler, "rejectedHandler");
     }
 
+
+
+
+
+    /***
+     *
+     * 功能描述 
+     * @author Nero
+     * @date 2020-04-03
+     * @param: parent NioEventLoopGroup
+     * @param: executor ThreadPerTaskExector
+     * @param: addTaskWakesUp
+     * @param: taskQueue
+     * @param: rejectedHandler
+     * @return 
+     */
     protected SingleThreadEventExecutor(EventExecutorGroup parent, Executor executor,
                                         boolean addTaskWakesUp, Queue<Runnable> taskQueue,
                                         RejectedExecutionHandler rejectedHandler) {
@@ -902,6 +921,13 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         return false;
     }
 
+
+
+
+
+
+    //- TODO-ZL executor的使用就在此处！那么NioEventLoop 传递进来之后做什么了?
+    //- TODO-ZL NioEventLoop 本身就是一个线程执行Exector对象，为什么内部又维护这样一个对象呢?
     private void doStartThread() {
         assert thread == null;
         executor.execute(new Runnable() {

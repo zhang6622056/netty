@@ -29,7 +29,12 @@ public final class DefaultEventExecutorChooserFactory implements EventExecutorCh
 
     private DefaultEventExecutorChooserFactory() { }
 
-    @SuppressWarnings("unchecked")
+
+
+
+
+
+
     @Override
     public EventExecutorChooser newChooser(EventExecutor[] executors) {
         if (isPowerOfTwo(executors.length)) {

@@ -21,6 +21,17 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+
+
+
+/***
+ *
+ * Netty自己实现的Set集合
+ * @author Nero
+ * @date 2020-04-03
+ * *@param: null
+ * @return
+ */
 final class SelectedSelectionKeySet extends AbstractSet<SelectionKey> {
 
     SelectionKey[] keys;

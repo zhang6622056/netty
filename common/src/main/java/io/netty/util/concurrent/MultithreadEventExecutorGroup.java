@@ -30,11 +30,20 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class MultithreadEventExecutorGroup extends AbstractEventExecutorGroup {
 
+
+    //- NioEventLoop 数组
     private final EventExecutor[] children;
+    //- EventExecutorChooser 是干嘛的，TODO-ZL
+    private final EventExecutorChooserFactory.EventExecutorChooser chooser;
+    //- 将children不可编辑，只保存到readonlyChildren
     private final Set<EventExecutor> readonlyChildren;
+
+
+
+
     private final AtomicInteger terminatedChildren = new AtomicInteger();
     private final Promise<?> terminationFuture = new DefaultPromise(GlobalEventExecutor.INSTANCE);
-    private final EventExecutorChooserFactory.EventExecutorChooser chooser;
+
 
     /**
      * Create a new instance.
@@ -66,21 +75,39 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
      * @param chooserFactory    the {@link EventExecutorChooserFactory} to use.
      * @param args              arguments which will passed to each {@link #newChild(Executor, Object...)} call
      */
+
+
+    /**
+     *
+     * 功能描述 
+     * @author Nero
+     * @date 2020-04-03
+     * @param: nThreads
+     * @param: executor Netty自定义的线程池
+     * @param: chooserFactory   事件执行策略工厂  TODO-ZL 
+     * @param: args
+     * @return 
+     */
     protected MultithreadEventExecutorGroup(int nThreads, Executor executor,
                                             EventExecutorChooserFactory chooserFactory, Object... args) {
         if (nThreads <= 0) {
             throw new IllegalArgumentException(String.format("nThreads: %d (expected: > 0)", nThreads));
         }
 
+
+        //- 执行期，用来提交任务
+        //- 如果执行器为空，则使用ThreadPerTaskExecutor，ThreadPerTaskExecutor底层使用FastThread
         if (executor == null) {
             executor = new ThreadPerTaskExecutor(newDefaultThreadFactory());
         }
 
-        children = new EventExecutor[nThreads];
 
-        for (int i = 0; i < nThreads; i ++) {
+        //- EventExecutor 就是NioEventLoop，循环创建NioEventLoop,设置到children
+        children = new EventExecutor[nThreads];
+        for (int i = 0; i < nThreads; i++) {
             boolean success = false;
             try {
+                //- 循环创建NioEventLoop
                 children[i] = newChild(executor, args);
                 success = true;
             } catch (Exception e) {
@@ -108,6 +135,12 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
             }
         }
 
+
+
+
+
+
+        //- EventExecutorChooser TODO-ZL 这个是什么
         chooser = chooserFactory.newChooser(children);
 
         final FutureListener<Object> terminationListener = new FutureListener<Object>() {
@@ -119,10 +152,12 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
             }
         };
 
+        //- 每一个NioEventLoop 都设置一个terminationListener
         for (EventExecutor e: children) {
             e.terminationFuture().addListener(terminationListener);
         }
 
+        //- 将NioEventLoop 保存到一个readOnly的数组中
         Set<EventExecutor> childrenSet = new LinkedHashSet<EventExecutor>(children.length);
         Collections.addAll(childrenSet, children);
         readonlyChildren = Collections.unmodifiableSet(childrenSet);
