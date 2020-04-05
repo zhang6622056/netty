@@ -97,6 +97,9 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
      * The {@link Class} which is used to create {@link Channel} instances from.
      * You either use this or {@link #channelFactory(io.netty.channel.ChannelFactory)} if your
      * {@link Channel} implementation has no no-args constructor.
+     *
+     *
+     * 设置ChannelFactory的指向，在
      */
     public B channel(Class<? extends C> channelClass) {
         return channelFactory(new ReflectiveChannelFactory<C>(
@@ -105,6 +108,9 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     }
 
     /**
+     *
+     *
+     * 设置ChannelFactory的指向AbstractBootStrap 的channelFactory 变量
      * @deprecated Use {@link #channelFactory(io.netty.channel.ChannelFactory)} instead.
      */
     @Deprecated
@@ -196,6 +202,10 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     }
 
     /**
+     *
+     *
+     *
+     *
      * Validate all the parameters. Sub-classes may override this, but should
      * call the super method in that case.
      */
@@ -261,6 +271,9 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     }
 
     /**
+     *
+     *
+     *
      * Create a new {@link Channel} and bind it.
      */
     public ChannelFuture bind(SocketAddress localAddress) {
@@ -272,6 +285,8 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
 
     /***
      *
+     *
+     *
      * 启动一个netty进程
      * @author Nero
      * @date 2020-04-03
@@ -280,7 +295,8 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
      */
     private ChannelFuture doBind(final SocketAddress localAddress) {
 
-        //- 初始化&注册
+        //- 创建channel
+        //- 设置channel的启动项并初始化channel的pipeline链表，添加InitServerInitializer
         final ChannelFuture regFuture = initAndRegister();
         final Channel channel = regFuture.channel();
         if (regFuture.cause() != null) {
@@ -327,11 +343,25 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     //- 创建NioServerSocketChannel
     //- 创建pipeline head,tail双向链表
     //- 创建unsafe
+
+
+
+    /**
+     *
+     * 1- 创建channel
+     * 2- 设置channel的启动项并初始化channel的pipeline链表，添加InitServerInitializer
+     * @author Nero
+     * @date 2020-04-04
+     * *@param:
+     * @return io.netty.channel.ChannelFuture
+     */
     final ChannelFuture initAndRegister() {
         Channel channel = null;
         try {
-            //- NioServerSocketChannel
+            //- 创建channel
             channel = channelFactory.newChannel();
+
+            //- 设置channel的启动项并初始化channel的pipeline链表，添加InitServerInitializer
             init(channel);
         } catch (Throwable t) {
             if (channel != null) {
@@ -345,8 +375,11 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         }
 
 
-
+        //-
         ChannelFuture regFuture = config().group().register(channel);
+
+
+
         if (regFuture.cause() != null) {
             if (channel.isRegistered()) {
                 channel.close();

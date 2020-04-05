@@ -784,6 +784,8 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         boolean inEventLoop = inEventLoop();
         addTask(task);
         if (!inEventLoop) {
+
+            //- 正式启动线程处理事件
             startThread();
             if (isShutdown()) {
                 boolean reject = false;
@@ -806,6 +808,12 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
             wakeup(inEventLoop);
         }
     }
+
+
+
+
+
+
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
@@ -930,6 +938,8 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
     //- TODO-ZL NioEventLoop 本身就是一个线程执行Exector对象，为什么内部又维护这样一个对象呢?
     private void doStartThread() {
         assert thread == null;
+
+        //- ThreadPerTaskExecutor
         executor.execute(new Runnable() {
             @Override
             public void run() {

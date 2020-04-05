@@ -19,27 +19,6 @@
 
 
    <dependencies>
-       <dependency>
-           <groupId>io.netty</groupId>
-           <artifactId>netty-buffer</artifactId>
-           <version>4.1.39.Final</version>
-       </dependency>
-       <dependency>
-           <groupId>io.netty</groupId>
-           <artifactId>netty-transport</artifactId>
-           <version>4.1.39.Final</version>
-       </dependency>
-       <dependency>
-           <groupId>io.netty</groupId>
-           <artifactId>netty-handler</artifactId>
-           <version>4.1.39.Final</version>
-       </dependency>
-       <dependency>
-           <groupId>io.netty</groupId>
-           <artifactId>netty-codec-http</artifactId>
-           <version>4.1.38.Final-SNAPSHOT</version>
-       </dependency>
-
        <!--反射util-->
        <dependency>
            <groupId>org.reflections</groupId>
@@ -53,6 +32,25 @@
            <type>jar</type>
            <scope>compile</scope>
        </dependency>
+       <dependency>
+           <groupId>io.netty</groupId>
+           <artifactId>netty-transport</artifactId>
+           <version>4.1.38.Final-SNAPSHOT</version>
+           <scope>compile</scope>
+       </dependency>
+       <dependency>
+           <groupId>io.netty</groupId>
+           <artifactId>netty-codec-http</artifactId>
+           <version>4.1.38.Final-SNAPSHOT</version>
+           <scope>compile</scope>
+       </dependency>
+
+
+
+
+
+
+
    </dependencies>
 
 

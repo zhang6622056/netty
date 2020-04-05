@@ -76,10 +76,17 @@ public abstract class SingleThreadEventLoop extends SingleThreadEventExecutor im
         return (EventLoop) super.next();
     }
 
+
+
+
     @Override
     public ChannelFuture register(Channel channel) {
         return register(new DefaultChannelPromise(channel, this));
     }
+
+
+
+
 
     @Override
     public ChannelFuture register(final ChannelPromise promise) {
@@ -87,6 +94,12 @@ public abstract class SingleThreadEventLoop extends SingleThreadEventExecutor im
         promise.channel().unsafe().register(this, promise);
         return promise;
     }
+
+
+
+
+
+
 
     @Deprecated
     @Override

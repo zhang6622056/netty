@@ -374,6 +374,20 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         return loop instanceof NioEventLoop;
     }
 
+
+
+
+
+
+
+    /***
+     *
+     * 注册事件到channel的selector中
+     * @author Nero
+     * @date 2020-04-04
+     * @param:
+     * @return void
+     */
     @Override
     protected void doRegister() throws Exception {
         boolean selected = false;
@@ -395,6 +409,11 @@ public abstract class AbstractNioChannel extends AbstractChannel {
             }
         }
     }
+
+
+
+
+
 
     @Override
     protected void doDeregister() throws Exception {

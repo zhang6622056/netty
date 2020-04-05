@@ -451,6 +451,19 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             return remoteAddress0();
         }
 
+        
+        
+        
+        
+        /***
+         *
+         * TODO-ZL
+         * @author Nero
+         * @date 2020-04-04
+         * @param: eventLoop
+         * @param: promise
+         * @return void
+         */
         @Override
         public final void register(EventLoop eventLoop, final ChannelPromise promise) {
             if (eventLoop == null) {
@@ -489,6 +502,20 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             }
         }
 
+
+
+
+
+
+
+        /***
+         *
+         * TODO-ZL regist a channel
+         * @author Nero
+         * @date 2020-04-04
+         * *@param: promise
+         * @return void
+         */
         private void register0(ChannelPromise promise) {
             try {
                 // check if the channel is still open as it could be closed in the mean time when the register
@@ -497,9 +524,13 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                     return;
                 }
                 boolean firstRegistration = neverRegistered;
+
+
+                //- 注册事件到channel的selector中
                 doRegister();
                 neverRegistered = false;
                 registered = true;
+
 
                 // Ensure we call handlerAdded(...) before we actually notify the promise. This is needed as the
                 // user may already fire events through the pipeline in the ChannelFutureListener.
@@ -507,16 +538,14 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
                 safeSetSuccess(promise);
                 pipeline.fireChannelRegistered();
-                // Only fire a channelActive if the channel has never been registered. This prevents firing
-                // multiple channel actives if the channel is deregistered and re-registered.
+
+
+
+
                 if (isActive()) {
                     if (firstRegistration) {
                         pipeline.fireChannelActive();
                     } else if (config().isAutoRead()) {
-                        // This channel was registered before and autoRead() is set. This means we need to begin read
-                        // again so that we process inbound data.
-                        //
-                        // See https://github.com/netty/netty/issues/4805
                         beginRead();
                     }
                 }
@@ -527,6 +556,11 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 safeSetFailure(promise, t);
             }
         }
+
+
+
+
+
 
         @Override
         public final void bind(final SocketAddress localAddress, final ChannelPromise promise) {

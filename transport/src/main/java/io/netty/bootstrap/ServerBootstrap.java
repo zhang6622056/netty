@@ -55,6 +55,10 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
 
     //- 事件筛选器组
     private volatile EventLoopGroup childGroup;
+
+
+
+    //- 用来保存handler ChannelInitializer
     private volatile ChannelHandler childHandler;
 
     public ServerBootstrap() { }
@@ -84,7 +88,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
 
     /***
      *
-     * 功能描述 
+     * 初始化主从Group模型
      * @author Nero
      * @date 2020-04-03
      * @param: parentGroup  bossGroup
@@ -94,6 +98,8 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
     public ServerBootstrap group(EventLoopGroup parentGroup, EventLoopGroup childGroup) {
         super.group(parentGroup);
         ObjectUtil.checkNotNull(childGroup, "childGroup");
+
+        //- 只允许初始化一次的处理
         if (this.childGroup != null) {
             throw new IllegalStateException("childGroup set already");
         }
@@ -145,13 +151,28 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         return this;
     }
 
+
+
+
+
+
+
+    /***
+     *
+     * - 设置channel的Options
+     * - 将特殊的Handler InitServerInitializer设置到 head和tail虚节点中间。
+     * @author Nero
+     * @date 2020-04-04
+     * *@param: channel
+     * @return void
+     */
     @Override
     void init(Channel channel) throws Exception {
+        //- 设置channel的启动项
         final Map<ChannelOption<?>, Object> options = options0();
         synchronized (options) {
             setChannelOptions(channel, options, logger);
         }
-
         final Map<AttributeKey<?>, Object> attrs = attrs0();
         synchronized (attrs) {
             for (Entry<AttributeKey<?>, Object> e: attrs.entrySet()) {
@@ -161,8 +182,9 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
             }
         }
 
-        ChannelPipeline p = channel.pipeline();
 
+        //- 设置channel的pipeline
+        ChannelPipeline p = channel.pipeline();
         final EventLoopGroup currentChildGroup = childGroup;
         final ChannelHandler currentChildHandler = childHandler;
         final Entry<ChannelOption<?>, Object>[] currentChildOptions;
@@ -174,6 +196,9 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
             currentChildAttrs = childAttrs.entrySet().toArray(newAttrArray(0));
         }
 
+
+
+        //- 将特殊的Handler设置到 head和tail虚节点中间。
         p.addLast(new ChannelInitializer<Channel>() {
             @Override
             public void initChannel(final Channel ch) throws Exception {

@@ -167,6 +167,9 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
         return new DefaultThreadFactory(getClass());
     }
 
+
+
+    //- 使用choose获取一个NioEventLoop
     @Override
     public EventExecutor next() {
         return chooser.next();

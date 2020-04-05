@@ -93,7 +93,7 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
      * @param: nThreads 要创建的NioEventLoop数
      * @param: executor ThreadPerTaskExecutor 底层搭配FastThread提交任务
      * @param: selectorProvider  Java原生，与Nio有关
-     * @param: selectStrategyFactory  
+     * @param: selectStrategyFactory
      * @return 
      */
     public NioEventLoopGroup(int nThreads, Executor executor, final SelectorProvider selectorProvider,
